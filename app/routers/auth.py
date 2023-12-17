@@ -38,7 +38,7 @@ def get_user_token(user : schemas.GetAuthToken, db: Session = Depends(get_db)):
 
             # create a token
             access_token = oauth2.create_access_token(data=new_user.id)
-            return {"access_token": access_token, "token_type": "bearer"}
+            return {"access_token": access_token, "token_type": "bearer", "role": aes.encrypt(str(new_user.role))}
     else:
         # update last login
         local_user.last_login = datetime.now()
@@ -46,4 +46,4 @@ def get_user_token(user : schemas.GetAuthToken, db: Session = Depends(get_db)):
         
         # create a token
         access_token = oauth2.create_access_token(data=local_user.id)
-        return {"access_token": access_token, "token_type": "bearer"}
+        return {"access_token": access_token, "token_type": "bearer", "role": aes.encrypt(str(local_user.role))}

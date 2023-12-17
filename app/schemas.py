@@ -11,6 +11,7 @@ class GetAuthToken(BaseModel):
 class Token(BaseModel):
     access_token : str
     token_type : str
+    role: str
 
 # For token verification
 class TokenData(BaseModel):
