@@ -15,7 +15,7 @@ router = APIRouter(prefix= "/auth",
 @router.post("/", response_model = schemas.Token)
 def get_user_token(user : schemas.GetAuthToken, db: Session = Depends(get_db)):
     aes = easyAes.EasyAES()
-    print(user.uid)
+    # print(user.uid)
     user.uid = aes.decrypt(user.uid)
 
     print(user.uid)
@@ -40,6 +40,10 @@ def get_user_token(user : schemas.GetAuthToken, db: Session = Depends(get_db)):
             access_token = oauth2.create_access_token(data=new_user.id)
             return {"access_token": access_token, "token_type": "bearer"}
     else:
+        # update last login
+        local_user.last_login = datetime.now()
+        db.commit()
+        
         # create a token
         access_token = oauth2.create_access_token(data=local_user.id)
         return {"access_token": access_token, "token_type": "bearer"}

@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, text, ForeignKey
 from .database import Base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationships
 
 
 
@@ -12,4 +12,5 @@ class User(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
     is_verified = Column(Boolean, nullable = False, server_default = text("True"))
     role = Column(Integer, server_default = text("1"))
+    last_login = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
 
