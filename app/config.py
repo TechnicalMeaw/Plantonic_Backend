@@ -12,7 +12,9 @@ class Settings(BaseSettings):
     access_token_expire_days: int
     aes_key: str
     iv: str
-
+    paytm_key: str
+    instamojo_api_key: str
+    instamojo_auth_token: str
     class Config:
         env_file = ".env"
 

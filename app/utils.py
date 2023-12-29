@@ -2,7 +2,7 @@ from passlib.context import CryptContext
 from datetime import datetime
 from sqlalchemy.orm import Session
 from . import models
-from datetime import time
+import time
 import re
 
 
@@ -25,3 +25,6 @@ def split_phone_number(phone_number):
         return country_code, number
     else:
         return None, None
+    
+def current_milli_time():
+    return round(time.time() * 1000)
