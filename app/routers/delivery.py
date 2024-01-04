@@ -12,10 +12,10 @@ router = APIRouter(prefix= "/deliver",
 def check_pin_code(pincode: str, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
     
     if not utils.is_valid_pin_code(pincode):
-        HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Invalid pin code')
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Invalid pin code')
 
     if not bd.check_pin_code_availability(pincode):
-        HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail='Delivery at this pin code is not available')
+        raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail='Delivery at this pin code is not available')
     
     return {"is_delivery_possible": True, "detail": ""}
    

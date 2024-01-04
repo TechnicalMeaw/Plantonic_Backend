@@ -22,7 +22,7 @@ class PinCodeAvailibility(BaseModel):
     is_delivery_possible: bool
     detail: str
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # # For Banners
 # class HomePageBannerObject(BaseModel):
