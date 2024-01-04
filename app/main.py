@@ -1,7 +1,6 @@
 from fastapi import FastAPI
-from . import models
 from .database import engine
-from .routers import auth
+from .routers import auth, delivery, homepage
 
 
 # models.Base.metadata.create_all(bind=engine)
@@ -9,3 +8,5 @@ from .routers import auth
 app = FastAPI()
 
 app.include_router(auth.router)
+app.include_router(delivery.router)
+app.include_router(homepage.router)

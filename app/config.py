@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     access_token_expire_days: int
     aes_key: str
     iv: str
+    blue_dart_client_id: str
+    blue_dart_client_secret: str
+    blue_dart_login_id: str
+    blue_dart_licence_key: str
 
     class Config:
         env_file = ".env"

@@ -15,13 +15,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
 aes = easyAes.EasyAES()
-# ACCESS_TOKEN_EXPIRE_DAYS = settings.access_token_expire_days
+ACCESS_TOKEN_EXPIRE_DAYS = settings.access_token_expire_days
 
 def create_access_token(data : dict):
     to_encode = {"user_id" : aes.encrypt(str(data))}
 
-    # expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
-    # to_encode.update({"exp": expire})
+    expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire})
 
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 

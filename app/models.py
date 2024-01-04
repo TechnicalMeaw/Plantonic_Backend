@@ -14,3 +14,9 @@ class User(Base):
     role = Column(Integer, server_default = text("1"))
     last_login = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
 
+class HomePageBanners(Base):
+    __tablename__ = "home_page_banners"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
+    image_link = Column(String, nullable = False)
+    index = Column(Integer, primary_key=True, nullable=False)

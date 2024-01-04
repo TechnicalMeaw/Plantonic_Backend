@@ -25,3 +25,18 @@ def split_phone_number(phone_number):
         return country_code, number
     else:
         return None, None
+    
+def is_valid_pin_code(pinCode:str):
+    # Regex to check valid pin code
+    # of India.
+    regex = "^[1-9]{1}[0-9]{2}\\s{0,1}[0-9]{3}$" 
+    p = re.compile(regex)
+     
+    if (pinCode == ''):
+        return False
+
+    m = re.match(p, pinCode)
+    if m is None:
+        return False
+    else:
+        return True

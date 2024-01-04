@@ -17,3 +17,23 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     id : Optional[str] = None
 
+# For Pin Code
+class PinCodeAvailibility(BaseModel):
+    is_delivery_possible: str
+    detail: str
+
+
+# # For Banners
+# class HomePageBannerObject(BaseModel):
+#     image_link: str
+#     index: int
+#     created_at : str
+#     id : int
+
+#     class Config:
+#         orm_mode = True
+
+
+# class HomePageBannersResponseModel(BaseModel):
+#     data: List[HomePageBannerObject]
+#     detail: str
