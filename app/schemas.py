@@ -19,9 +19,10 @@ class TokenData(BaseModel):
 
 # For Pin Code
 class PinCodeAvailibility(BaseModel):
-    is_delivery_possible: str
+    is_delivery_possible: bool
     detail: str
-
+    class Config:
+        orm_mode = True
 
 # # For Banners
 # class HomePageBannerObject(BaseModel):
