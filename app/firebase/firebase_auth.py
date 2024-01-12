@@ -13,6 +13,3 @@ def get_firebase_user(uid : str):
         return user.__dict__
     except:
         return None
-
-# user = get_firebase_user("PGWjTRhjDvOUe6iXfYOX3Q9xUdf2")
-# print(user["_data"]["localId"])

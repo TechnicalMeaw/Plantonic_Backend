@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, text, ForeignKey
 from .database import Base
-from sqlalchemy.orm import relationships
+from sqlalchemy.orm import relationship
 
 
 
@@ -20,3 +20,46 @@ class HomePageBanners(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
     image_link = Column(String, nullable = False)
     index = Column(Integer, primary_key=True, nullable=False)
+
+class BlueDartOrders(Base):
+    __tablename__ = "bd_orders"
+    # id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    bd_awb_no = Column(String, nullable = False, primary_key=True)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
+    bd_ccrcrdref = Column(String, nullable = True)
+    bd_cluster_code = Column(String, nullable = True)
+    bd_destination_area = Column(String, nullable=True)
+    bd_destination_location = Column(String, nullable=True)
+    bd_is_error = Column(Boolean, nullable=True)
+    bd_token_number = Column(String, nullable=True)
+    bd_status_information = Column(String, nullable=True)
+    updated_at = Column(TIMESTAMP(timezone=True), nullable=True)
+
+
+class Orders(Base):
+    __tablename__ = "orders"
+    order_id = Column(Integer, nullable = False, primary_key=True, autoincrement=True)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
+    updated_at = Column(TIMESTAMP(timezone=True), nullable=True)
+    product_id = Column(String, nullable = False)
+    merchant_id = Column(String, nullable = False)
+    customer_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable = False)
+    customer_name = Column(String, nullable = False)
+    customer_full_address = Column(String, nullable=False)
+    customer_pincode = Column(String, nullable=False)
+    customer_address_type = Column(String, nullable=False)
+    customer_phone_number = Column(String, nullable=False)
+    customer_payment_method = Column(String, nullable=False)
+    order_quantity = Column(Integer, nullable=False, server_default=text('1'))
+    actual_order_quantity = Column(Integer, nullable=False, server_default=text('1'))
+    related_to_order_id = Column(String, nullable = False)
+    transaction_id = Column(String, nullable=True)
+    payable = Column(String, nullable=False)
+    delivery_charge = Column(String, nullable=False)
+    product_listed_price = Column(String, nullable=False)
+    bd_order_id = Column(String, ForeignKey('bd_orders.bd_awb_no', ondelete="CASCADE"), nullable = False)
+    special_instructions = Column(String, nullable=True)
+
+
+    user = relationship("User")
+    bd_order = relationship("BlueDartOrders")

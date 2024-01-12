@@ -1,9 +1,9 @@
 from passlib.context import CryptContext
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from . import models
-from datetime import time
 import re
+import time as T
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
@@ -13,7 +13,6 @@ def hash(password : str):
 
 def verify(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
-
 
 
 def split_phone_number(phone_number):
@@ -40,3 +39,16 @@ def is_valid_pin_code(pinCode:str):
         return False
     else:
         return True
+    
+
+def current_milli_time():
+    return round(T.time() * 1000)
+
+def get_pickup_date():
+    # Puckup date
+    current_date = datetime.now().date()
+    # Calculate the date for day after tomorrow
+    day_after_tomorrow = current_date + timedelta(days=2)
+    # Combine the date for day after tomorrow with 4 pm time
+    desired_time = datetime.combine(day_after_tomorrow, datetime.strptime('16:00', '%H:%M').time())
+    return int(desired_time.timestamp() * 1000)

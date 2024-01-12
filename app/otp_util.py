@@ -5,6 +5,7 @@ from starlette.responses import JSONResponse
 from pydantic import EmailStr, BaseModel
 from typing import List
 from random import randint
+from .config import settings
 
 def generateOtp():
     otp = randint(100001, 999999)
@@ -12,9 +13,9 @@ def generateOtp():
 
 
 conf = ConnectionConfig(
-    MAIL_USERNAME="Ja.adam192@gmail.com",
-    MAIL_PASSWORD="avhxhxwpiyosmjij",
-    MAIL_FROM = "Ja.adam192@gmail.com",
+    MAIL_USERNAME= settings.otp_mail,
+    MAIL_PASSWORD= settings.otp_password,
+    MAIL_FROM = settings.otp_mail,
     MAIL_PORT=465,
     MAIL_SERVER="smtp.gmail.com",
     MAIL_STARTTLS = False,

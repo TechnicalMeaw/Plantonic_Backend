@@ -16,6 +16,18 @@ class Settings(BaseSettings):
     blue_dart_client_secret: str
     blue_dart_login_id: str
     blue_dart_licence_key: str
+    blue_dart_api_type: str
+    blue_dart_customer_code: str
+    blue_dart_area_code: str
+    merchant_phone_number: str
+    gst_number: str
+    merchant_pincode: str
+    merchant_address: str
+    mail_id: str
+    otp_mail: str
+    otp_password: str
+    firebase_realtime_db_url: str
+    
 
     class Config:
         env_file = ".env"

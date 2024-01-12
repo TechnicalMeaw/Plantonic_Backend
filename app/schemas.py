@@ -38,3 +38,33 @@ class PinCodeAvailibility(BaseModel):
 # class HomePageBannersResponseModel(BaseModel):
 #     data: List[HomePageBannerObject]
 #     detail: str
+        
+
+class OrderItem(BaseModel):
+    orderId: str
+    merchantId : str 
+    productId : str
+    customerId: str
+    customerName: str 
+    address: str
+    pincode: str
+    addressType : str
+    phoneNo: str 
+    email : str
+    paymentMethod: str
+    quantity: int
+    status: str
+    transactionId: str
+    timeStamp: int
+    payable : str 
+    listedPrice: str
+    deliveryCharge: str
+    deliveryDate: int
+    special_instructions: str
+
+class PlaceOrderRequestModel(BaseModel):
+    all_orders: List[OrderItem]
+
+class PaceOrderResponseModel(BaseModel):
+    status: str 
+    detail: str
