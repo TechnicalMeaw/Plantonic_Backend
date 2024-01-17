@@ -128,7 +128,7 @@ def get_all_orders(page : int = 1, search: Optional[str] = "", db: Session = Dep
     if order_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No recent orders found")
 
-    all_orders = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).limit(10).offset((page-1)*10).all()
+    all_orders = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
 
     if not all_orders:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No more orders found")
