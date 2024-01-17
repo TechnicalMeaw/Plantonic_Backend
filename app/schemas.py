@@ -68,3 +68,37 @@ class PlaceOrderRequestModel(BaseModel):
 class PaceOrderResponseModel(BaseModel):
     status: str 
     detail: str
+
+
+class TrackOrderRequestModel(BaseModel):
+    order_id: int
+
+
+class Scan(BaseModel):
+    Scan: str
+    ScanCode: str
+    ScanType: str    
+    ScanDate: str
+    ScanTime: str
+    ScannedLocation: str
+                  
+class ScansItem(BaseModel):
+    ScanDetail : List[Scan]
+
+class ShipmentItem(BaseModel):
+    Scans: ScansItem
+    WaybillNo: str
+    Origin: str
+    Destination: str
+    Status: str
+    StatusType: str
+    StatusDate: str
+    StatusTime: str
+
+class ShipmentDataItem(BaseModel):
+    Shipment: ShipmentItem
+
+class TrackOrderResponseModel(BaseModel):
+    ShipmentData: ShipmentDataItem
+
+ 

@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     otp_mail: str
     otp_password: str
     firebase_realtime_db_url: str
+    blue_dart_tracking_licence_key: str
     
 
     class Config:

@@ -133,11 +133,22 @@ def get_all_orders(page : int = 1, search: Optional[str] = "", db: Session = Dep
     if not all_orders:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No more orders found")
             
-    total_page = int(order_count/10)
+    total_page = math.ceil(order_count/10)
 
-    return {"current_page": page, 
-            "total_page": total_page,
+    return {
             "data": all_orders, 
+            "current_page": page, 
+            "total_count": order_count,
+            "total_page": total_page,
             "prev_page": page-1 if page > 1 else None, 
             "next_page": page+1 if page < total_page else None
             }
+
+
+@router.post("/track_order", response_model=schemas.TrackOrderResponseModel)
+def place_order(track_order: schemas.TrackOrderRequestModel, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+    order = db.query(models.Orders).filter(models.Orders.order_id == track_order.order_id, models.Orders.customer_id == current_user.id).first()
+    if not order:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "The order you're looking for is not found")
+    res = bd.track_shipment(str(order.bd_order_id))
+    return res

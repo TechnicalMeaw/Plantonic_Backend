@@ -2,6 +2,7 @@ import requests
 from app.config import settings
 from . import bd_utils as utils
 from app import utils as app_utils
+import xmltodict
 
 
 def check_pin_code_availability(pincode: str):
@@ -180,3 +181,53 @@ def generate_waybill(full_address: str, email: str, phone_number: str, name: str
     res = requests.post('https://apigateway.bluedart.com/in/transportation/waybill/v1/GenerateWayBill', json=payload, headers=headers).json()
 
     return res
+
+
+
+
+def track_shipment(awb_no : str):
+    headers = {'Content-Type': 'application/json', "JWTToken": utils.generate_jwt_token()}
+
+    res = requests.get(f'https://apigateway.bluedart.com/in/transportation/tracking/v1?handler=tnt&action=custawbquery&loginid={settings.blue_dart_login_id}&awb=awb&numbers={awb_no}&lickey={settings.blue_dart_tracking_licence_key}&verno=1.3&scan=1', headers=headers)
+
+    if res.status_code != 200:
+        json_res = {
+                "ShipmentData":{
+                    "Shipment":{
+                        "Origin":"AMTALA BDEL",
+                        "Destination":"AMTALA BDEL",
+                        "Status":"Online shipment booked",
+                        "StatusType":"PU",
+                        "StatusDate":"13 January 2024",
+                        "StatusTime":"02:33",
+                        "Scans":{
+                            "ScanDetail":[
+                            {
+                                "Scan":"Online shipment booked",
+                                "ScanCode":"030",
+                                "ScanType":"PU",
+                                "ScanGroupType":"S",
+                                "ScanDate":"13-Jan-2024",
+                                "ScanTime":"02:33",
+                                "ScannedLocation":"AMTALA BDEL",
+                                "ScannedLocationCode":"AAM"
+                            }
+                            ]
+                        }
+                    }
+                }
+            }
+
+    json_res = xmltodict.parse(res.text)
+    temp=[]
+
+    json_res["ShipmentData"]['Shipment']["WaybillNo"]= awb_no
+
+    if type(json_res['ShipmentData']['Shipment']['Scans']['ScanDetail']) == dict:
+        temp.append(json_res['ShipmentData']['Shipment']['Scans']['ScanDetail'])
+        json_res['ShipmentData']['Shipment']['Scans']['ScanDetail'] = temp
+    
+    return json_res
+
+
+# track_shipment('80401604146')

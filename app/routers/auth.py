@@ -19,7 +19,7 @@ def get_user_token(user : schemas.GetAuthToken, db: Session = Depends(get_db)):
     user.uid = aes.decrypt(user.uid)
 
     print(user.uid)
-    local_user = db.query(models.User).filter(user.uid == models.User.firebase_uid).first()
+    local_user = db.query(models.User).filter(models.User.firebase_uid == user.uid).first()
 
     # IF user doesn't exists locally
     if not local_user:
