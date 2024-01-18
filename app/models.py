@@ -63,3 +63,14 @@ class Orders(Base):
 
     user = relationship("User")
     bd_order = relationship("BlueDartOrders")
+
+
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
+    feedback = Column(String, nullable = False)
+    customer_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable = False)
+
+    user = relationship("User")

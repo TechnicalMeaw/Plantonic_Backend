@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from .database import engine
-from .routers import auth, delivery, homepage
+from .routers import auth, delivery, homepage, profilepage
 from .blue_dart import api
 
 
@@ -11,6 +11,7 @@ app = FastAPI()
 app.include_router(auth.router)
 app.include_router(delivery.router)
 app.include_router(homepage.router)
+app.include_router(profilepage.router)
 
 
 # api.track_shipment('80401604146')

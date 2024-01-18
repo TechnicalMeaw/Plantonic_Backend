@@ -102,3 +102,8 @@ class TrackOrderResponseModel(BaseModel):
     ShipmentData: ShipmentDataItem
 
  
+
+#  Feedback
+class FeedBackRequestModel(BaseModel):
+    feedBack : str
+    rating: Optional[str] = None

@@ -150,5 +150,5 @@ def place_order(track_order: schemas.TrackOrderRequestModel, db: Session = Depen
     order = db.query(models.Orders).filter(models.Orders.order_id == track_order.order_id, models.Orders.customer_id == current_user.id).first()
     if not order:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "The order you're looking for is not found")
-    res = bd.track_shipment(str(order.bd_order_id))
+    res = bd.track_shipment(str(order.bd_order_id), order)
     return res
