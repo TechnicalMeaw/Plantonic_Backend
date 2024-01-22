@@ -122,13 +122,28 @@ def place_order(all_orders: schemas.PlaceOrderRequestModel, db: Session = Depend
 
 
 @router.get("/orders")
-def get_all_orders(page : int = 1, search: Optional[str] = "", db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+def get_all_orders(page : int = 1, search: Optional[str] = "", is_admin: Optional[bool] = False, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
-    order_count = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).count()
+    order_count = 0
+    if is_admin:
+        if current_user.role == 2:
+            order_count = db.query(models.Orders).filter(models.Orders.merchant_id == current_user.firebase_uid).count()
+        elif current_user.role == 3:
+            order_count = db.query(models.Orders).count()
+    else:
+        order_count = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).count()
+
     if order_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No recent orders found")
 
-    all_orders = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
+    all_orders = None
+    if is_admin:
+        if current_user.role == 2:
+            all_orders = db.query(models.Orders).filter(models.Orders.merchant_id == current_user.firebase_uid).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
+        elif current_user.role == 3:
+            all_orders = db.query(models.Orders).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
+    else:
+        all_orders = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
 
     if not all_orders:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No more orders found")
