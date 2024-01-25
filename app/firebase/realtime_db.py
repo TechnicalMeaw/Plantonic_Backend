@@ -27,3 +27,14 @@ def get_product_info(product_id: str):
 
 def delete_product_from_cart(user_id: str, product_id: str):
     authed_session.delete(f"{settings.firebase_realtime_db_url}/cart/{user_id}/{product_id}.json")
+
+def update_product_quantity(product_id: str, quantity: int):
+    current_quantity = authed_session.get(f"{settings.firebase_realtime_db_url}/products/{product_id}/currentStock.json")
+    to_be_quantity = int(current_quantity.json()) - quantity
+    if to_be_quantity < 0:
+        to_be_quantity = 0
+        # return int(0 - to_be_quantity)                                  
+    res = authed_session.patch(f"{settings.firebase_realtime_db_url}/products/{product_id}.json", json={"currentStock": to_be_quantity})
+    print(res.json())
+
+# update_product_quantity('1a918ecc-8919-4a62-afd1-46798e0cfeca', 4)

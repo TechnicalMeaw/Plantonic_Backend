@@ -98,7 +98,7 @@ def generate_waybill(full_address: str, email: str, phone_number: str, name: str
                 "IsReversePickup": is_reverse_pickup if is_reverse_pickup is not None else False,
                 "ItemCount": product_count if product_count is not None else 1,
                 "Officecutofftime":"",
-                "PDFOutputNotRequired": True,
+                "PDFOutputNotRequired": False,
                 "PackType":"",
                 "ParcelShopCode":"",
                 "PayableAt":"",

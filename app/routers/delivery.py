@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from ..blue_dart import api as bd
 from ..firebase import realtime_db
 import math
+from ..config import settings
 
 
 router = APIRouter(prefix= "/deliver",
@@ -69,11 +70,16 @@ def place_order(all_orders: schemas.PlaceOrderRequestModel, db: Session = Depend
                                 weight= product['weight'],
                                 box_count= 1, # Default
                                 amount_collectable= payable,
-                                register_for_pickup= False # Need to change when production
+                                register_for_pickup= settings.is_live # Need to change when production
                                 )
+            
                 
                 if not bd_response or not bd_response['GenerateWayBillResult'] or not bd_response['GenerateWayBillResult']['Status']:
                     continue
+
+                # Save PDF
+                with open(f"./app/static/labels/{bd_response['GenerateWayBillResult']['AWBNo']}.pdf", 'wb') as f:
+                    f.write(bytearray(bd_response['GenerateWayBillResult']['AWBPrintContent']))
 
                 bd_order = models.BlueDartOrders(bd_awb_no = bd_response['GenerateWayBillResult']['AWBNo'],
                                     bd_ccrcrdref = bd_response['GenerateWayBillResult']['CCRCRDREF'],
@@ -116,6 +122,9 @@ def place_order(all_orders: schemas.PlaceOrderRequestModel, db: Session = Depend
             # Delete product from cart
             realtime_db.delete_product_from_cart(user_id=current_user.firebase_uid, product_id=order.productId)
 
+            # Update stocks
+            realtime_db.update_product_quantity(product_id=order.productId, quantity=order.quantity)
+
     except Exception:
         raise HTTPException(status_code=status.HTTP_424_FAILED_DEPENDENCY, detail="Something went wrong, some of the orders may not have been placed.")
     return {"status": "Valid", "detail": "Order placed successfully"}
@@ -139,7 +148,7 @@ def get_all_orders(page : int = 1, search: Optional[str] = "", is_admin: Optiona
     all_orders = None
     if is_admin:
         if current_user.role == 2:
-            all_orders = db.query(models.Orders).filter(models.Orders.merchant_id == current_user.firebase_uid).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
+            all_orders = db.query(models.Orders).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
         elif current_user.role == 3:
             all_orders = db.query(models.Orders).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
     else:
