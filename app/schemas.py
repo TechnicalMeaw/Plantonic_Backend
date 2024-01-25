@@ -18,11 +18,23 @@ class TokenData(BaseModel):
     id : Optional[str] = None
 
 # For Pin Code
+    
+class LocationInfoResModel(BaseModel):
+    region: str
+    name: str
+    dist: str
+    state: str
+    country: str
+    pin: str
+
 class PinCodeAvailibility(BaseModel):
     is_delivery_possible: bool
     detail: str
+    location_data: List[LocationInfoResModel]
     class Config:
         from_attributes = True
+
+
 
 # # For Banners
 # class HomePageBannerObject(BaseModel):

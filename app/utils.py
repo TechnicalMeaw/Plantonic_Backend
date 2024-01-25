@@ -1,9 +1,11 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
+import requests
 from sqlalchemy.orm import Session
 from . import models
 import re
 import time as T
+import indiapins
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
@@ -52,3 +54,18 @@ def get_pickup_date():
     # Combine the date for day after tomorrow with 4 pm time
     desired_time = datetime.combine(day_after_tomorrow, datetime.strptime('16:00', '%H:%M').time())
     return int(desired_time.timestamp() * 1000)
+
+
+def get_location_details(pincode: str):
+    maches = indiapins.matching(pincode)
+    result = []
+    for each in maches:
+        temp = {}
+        temp['name'] = each['Name']
+        temp['region'] = each['Region'].replace(" Region", "")
+        temp['dist'] = each['District']
+        temp['state'] = each['State']
+        temp['country'] = each['Country']
+        temp['pin'] = str(each['Pincode'])
+        result.append(temp)
+    return result
