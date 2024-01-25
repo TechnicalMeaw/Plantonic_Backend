@@ -12,5 +12,5 @@ router = APIRouter(prefix= "/home",
 @router.get("/get_banners")
 def get_all_banners(db: Session = Depends(get_db)):
 
-    all_banners = db.query(models.HomePageBanners).all()
+    all_banners = db.query(models.HomePageBanners).order_by(models.HomePageBanners.index).all()
     return {"data": all_banners, "detail": ""}
