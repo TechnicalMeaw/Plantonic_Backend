@@ -16,12 +16,12 @@ router = APIRouter(prefix= "/deliver",
 
 
 
-# @router.get("/get_location_from_pin", response_model = List[schemas.LocationInfoResModel])
-# def get_location_from_pin(pincode: str, current_user : models.User = Depends(oauth2.get_current_user)):
-#     if not utils.is_valid_pin_code(pincode):
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Invalid pin code')
+@router.get("/get_location_from_pin", response_model = List[schemas.LocationInfoResModel])
+def get_location_from_pin(pincode: str, current_user : models.User = Depends(oauth2.get_current_user)):
+    if not utils.is_valid_pin_code(pincode):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Invalid pin code')
     
-#     return utils.get_location_details(pincode)
+    return utils.get_location_details(pincode)
 
 @router.get("/check_pin_code", response_model = schemas.PinCodeAvailibility)
 def check_pin_code(pincode: str, current_user : models.User = Depends(oauth2.get_current_user)):
@@ -32,9 +32,9 @@ def check_pin_code(pincode: str, current_user : models.User = Depends(oauth2.get
     if not bd.check_pin_code_availability(pincode):
         raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail='Delivery at this pin code is not available')
     
-    # return {"is_delivery_possible": True, "detail": "", "location_data": utils.get_location_details(pincode)}
+    return {"is_delivery_possible": True, "detail": "", "location_data": utils.get_location_details(pincode)}
    
-    return {"is_delivery_possible": True, "detail": ""}
+    # return {"is_delivery_possible": True, "detail": ""}
 
 
 @router.post("/place_order", response_model=schemas.PaceOrderResponseModel)

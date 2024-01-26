@@ -69,3 +69,21 @@ def get_pickup_date():
 #         temp['pin'] = str(each['Pincode'])
 #         result.append(temp)
 #     return result
+
+def get_location_details(pincode: str):
+    res = requests.get(f"http://postalpincode.in/api/pincode/{pincode}").json()
+
+    result = []
+    if res['PostOffice']:
+        for each in res['PostOffice']:
+            temp = {}
+            temp['name'] = each['Name']
+            temp['region'] = each['Region'].replace("Calcutta", "Kolkata")
+            temp['dist'] = each['District']
+            temp['state'] = each['State']
+            temp['country'] = each['Country']
+            temp['pin'] = pincode
+            result.append(temp)
+    return result
+
+    

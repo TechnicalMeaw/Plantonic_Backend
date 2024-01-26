@@ -30,7 +30,7 @@ class LocationInfoResModel(BaseModel):
 class PinCodeAvailibility(BaseModel):
     is_delivery_possible: bool
     detail: str
-    # location_data: List[LocationInfoResModel]
+    location_data: List[LocationInfoResModel]
     class Config:
         from_attributes = True
 
