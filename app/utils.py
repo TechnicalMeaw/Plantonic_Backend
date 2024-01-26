@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from . import models
 import re
 import time as T
-import indiapins
+# import indiapins
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
@@ -56,16 +56,16 @@ def get_pickup_date():
     return int(desired_time.timestamp() * 1000)
 
 
-def get_location_details(pincode: str):
-    maches = indiapins.matching(pincode)
-    result = []
-    for each in maches:
-        temp = {}
-        temp['name'] = each['Name']
-        temp['region'] = each['Region'].replace(" Region", "")
-        temp['dist'] = each['District']
-        temp['state'] = each['State']
-        temp['country'] = each['Country']
-        temp['pin'] = str(each['Pincode'])
-        result.append(temp)
-    return result
+# def get_location_details(pincode: str):
+#     maches = indiapins.matching(pincode)
+#     result = []
+#     for each in maches:
+#         temp = {}
+#         temp['name'] = each['Name']
+#         temp['region'] = each['Region'].replace(" Region", "")
+#         temp['dist'] = each['District']
+#         temp['state'] = each['State']
+#         temp['country'] = each['Country']
+#         temp['pin'] = str(each['Pincode'])
+#         result.append(temp)
+#     return result
