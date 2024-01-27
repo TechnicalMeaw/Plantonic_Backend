@@ -149,7 +149,7 @@ def get_all_orders(page : int = 1, search: Optional[str] = "", is_admin: Optiona
     if is_admin:
         if current_user.role == 2:
             order_count = db.query(models.Orders).filter(models.Orders.merchant_id == current_user.firebase_uid).count()
-        elif current_user.role == 3:
+        elif current_user.role == 3 or current_user.role == 4:
             order_count = db.query(models.Orders).count()
     else:
         order_count = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).count()
@@ -161,7 +161,7 @@ def get_all_orders(page : int = 1, search: Optional[str] = "", is_admin: Optiona
     if is_admin:
         if current_user.role == 2:
             all_orders = db.query(models.Orders).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
-        elif current_user.role == 3:
+        elif current_user.role == 3 or current_user.role == 4:
             all_orders = db.query(models.Orders).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
     else:
         all_orders = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
