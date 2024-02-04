@@ -177,11 +177,24 @@ def get_all_orders(page : int = 1, search: Optional[str] = "", is_admin: Optiona
             
     total_page = math.ceil(order_count/10)
 
+    # get delivery status
     for order in all_orders:
         if not order.is_delivered:
             order.is_delivered = bd.is_shipment_delivered(order.bd_order_id)
-            db.commit()
-            db.refresh(order)
+    db.commit()
+
+    # Get updated data
+    if is_admin:
+        if current_user.role == 2:
+            all_orders = db.query(models.Orders).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
+        elif current_user.role == 3 or current_user.role == 4:
+            all_orders = db.query(models.Orders).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
+    else:
+        all_orders = db.query(models.Orders).filter(models.Orders.customer_id == current_user.id).order_by(models.Orders.order_id.desc()).limit(10).offset((page-1)*10).all()
+
+
+    
+            
 
     return {
             "data": all_orders, 
