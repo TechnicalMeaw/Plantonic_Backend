@@ -180,8 +180,8 @@ def get_all_orders(page : int = 1, search: Optional[str] = "", is_admin: Optiona
     for order in all_orders:
         if not order.is_delivered:
             order.is_delivered = bd.is_shipment_delivered(order.bd_order_id)
-    db.commit()
-    db.refresh(all_orders)
+            db.commit()
+            db.refresh(order)
 
     return {
             "data": all_orders, 
