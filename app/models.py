@@ -59,6 +59,7 @@ class Orders(Base):
     product_listed_price = Column(String, nullable=False)
     bd_order_id = Column(String, ForeignKey('bd_orders.bd_awb_no', ondelete="CASCADE"), nullable = False)
     special_instructions = Column(String, nullable=True)
+    is_delivered = Column(Boolean, nullable = False, server_default = text("False"))
 
 
     user = relationship("User")

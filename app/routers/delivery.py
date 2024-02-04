@@ -142,6 +142,12 @@ def place_order(all_orders: schemas.PlaceOrderRequestModel, db: Session = Depend
     return {"status": "Valid", "detail": "Order placed successfully"}
 
 
+# @router.get("/check_delivery_status")
+# def get_delivery_status(track_order: schemas.TrackOrderRequestModel, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+
+
+
+
 @router.get("/orders")
 def get_all_orders(page : int = 1, search: Optional[str] = "", is_admin: Optional[bool] = False, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
 
@@ -170,6 +176,12 @@ def get_all_orders(page : int = 1, search: Optional[str] = "", is_admin: Optiona
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "No more orders found")
             
     total_page = math.ceil(order_count/10)
+
+    for order in all_orders:
+        if not order.is_delivered:
+            order.is_delivered = bd.is_shipment_delivered(order.bd_order_id)
+    db.commit()
+    db.refresh(all_orders)
 
     return {
             "data": all_orders, 

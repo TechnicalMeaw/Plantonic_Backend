@@ -185,6 +185,17 @@ def generate_waybill(full_address: str, email: str, phone_number: str, name: str
 
 
 
+def is_shipment_delivered(awb_no : str):
+    headers = {'Content-Type': 'application/json', "JWTToken": utils.generate_jwt_token()}
+
+    res = requests.get(f'https://apigateway.bluedart.com/in/transportation/tracking/v1?handler=tnt&action=custawbquery&loginid={settings.blue_dart_login_id}&format=json&awb=awb&numbers={awb_no}&lickey={settings.blue_dart_tracking_licence_key}&verno=1.3&scan=1', headers=headers).json()
+    
+    try:
+        return res['ShipmentData']['Shipment'][0]['StatusType'] == 'DL'
+    except Exception:
+        return False
+
+
 
 def track_shipment(awb_no : str, order: models.Orders):
     headers = {'Content-Type': 'application/json', "JWTToken": utils.generate_jwt_token()}
@@ -230,7 +241,10 @@ def track_shipment(awb_no : str, order: models.Orders):
                 }
             }
 
+    scans = json_res['ShipmentData']['Shipment']['Scans']['ScanDetail']
     
+    json_res['ShipmentData']['Shipment']['Scans']['ScanDetail'] = sorted(scans, key = lambda x: (x['ScanDate'], x['ScanTime']))
+
     return json_res
 
 
