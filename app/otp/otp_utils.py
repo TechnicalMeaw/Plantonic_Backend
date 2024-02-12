@@ -1,15 +1,21 @@
-from fastapi import FastAPI
-from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
-from starlette.requests import Request
-from starlette.responses import JSONResponse
-from pydantic import EmailStr, BaseModel
-from typing import List
-from random import randint
-from .config import settings
 
-def generateOtp():
-    otp = randint(100001, 999999)
-    return otp
+import os
+import requests
+from ..config import settings
+import base64
+from email.mime.text import MIMEText
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from requests import HTTPError
+from fastapi_mail import FastMail, MessageSchema,ConnectionConfig
+
+def send_sms_otp(otp: int, phone: str):
+    res = requests.get(f'{settings.sms_otp_base_url}?authorization={settings.sms_otp_auth_key}&route=otp&variables_values={otp}&flash=0&numbers={phone}').json()
+    return res['return'] == True
+
+def send_voice_otp(otp: int, phone: str):
+    res = requests.get(f'{settings.voice_otp_base_url}?authorization={settings.sms_otp_auth_key}&route=otp&variables_values={otp}&numbers={phone}').json()
+    return res['return'] == True
 
 
 conf = ConnectionConfig(
@@ -24,11 +30,11 @@ conf = ConnectionConfig(
 )
 
 
-async def sendOTP(email, otp: int):
+async def send_email_otp(otp: int, email: str, name: str):
 
     message = MessageSchema(
-        subject="Your OTP",
-        recipients=email,  # List of recipients, as many as you can pass  
+        subject="Your One Time Password (OTP) From Plantonic",
+        recipients=[email,],  # List of recipients, as many as you can pass  
         body='<!DOCTYPE html>' +
             '<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">' +
             '<head>' +
@@ -112,7 +118,7 @@ async def sendOTP(email, otp: int):
             '<tbody>' +
             '<tr>' +
             '<td align="start" style="font-size:0px;padding:10px 25px;padding-right:25px;padding-left:25px;word-break:break-word;">' +
-            '<div style="font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px;line-height:1;text-align:start;color:#000000;"><span>Hello,</span></div>' +
+            f'<div style="font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px;line-height:1;text-align:start;color:#000000;"><span>Hello {name},</span></div>' +
             '</td>' +
             '</tr>' +
             '<tr>' +
@@ -127,7 +133,7 @@ async def sendOTP(email, otp: int):
             '</tr>' +
             '<tr>' +
             '<td align="start" style="font-size:0px;padding:10px 25px;padding-right:16px;padding-left:25px;word-break:break-word;">' +
-            '<div style="font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px;line-height:1;text-align:start;color:#000000;">This code will be valid for the next 5 minutes only.</div>' +
+            '<div style="font-family:open Sans Helvetica, Arial, sans-serif;font-size:16px;line-height:1;text-align:start;color:#000000;">This code will be valid for next 5 minutes only.</div>' +
             '</td>' +
             '</tr>' +
             '<tr>' +
@@ -151,5 +157,3 @@ async def sendOTP(email, otp: int):
 
     fm = FastMail(conf)
     await fm.send_message(message)
-
-# await sendOTP(["santanumukherjeebh@gmail.com",], 877865)

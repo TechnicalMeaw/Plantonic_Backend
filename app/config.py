@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     otp_password: str
     firebase_realtime_db_url: str
     blue_dart_tracking_licence_key: str
+    sms_otp_auth_key: str
+    sms_otp_base_url: str
+    voice_otp_base_url: str
     is_live: bool
     
 

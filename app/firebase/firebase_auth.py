@@ -13,3 +13,17 @@ def get_firebase_user(uid : str):
         return user.__dict__
     except:
         return None
+
+def get_firebase_user_from_email(email: str):
+    try:
+        user = auth.get_user_by_email(email)        
+        return user.__dict__
+    except:
+        return None
+    
+def get_firebase_user_from_phone(phone: str):
+    try:
+        user = auth.get_user_by_phone_number(phone)        
+        return user.__dict__
+    except:
+        return None

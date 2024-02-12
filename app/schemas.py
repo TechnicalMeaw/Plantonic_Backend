@@ -7,6 +7,12 @@ from typing import Optional
 class GetAuthToken(BaseModel):
     uid : str
 
+class VerifyOTPRequestModel(BaseModel):
+    otp: int
+    username: str
+    otp_type: Optional[str] = 'email'
+
+
 # Token response model
 class Token(BaseModel):
     access_token : str

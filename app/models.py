@@ -66,7 +66,6 @@ class Orders(Base):
     bd_order = relationship("BlueDartOrders")
 
 
-
 class Feedback(Base):
     __tablename__ = "feedback"
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -75,3 +74,14 @@ class Feedback(Base):
     customer_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable = False)
 
     user = relationship("User")
+
+class OTP(Base):
+    __tablename__ = "otp"
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
+    username = Column(String, nullable = False)
+    customer_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), nullable = False)
+    firebase_uid = Column(String, nullable = False, unique = False)
+    otp = Column(String, nullable = False)
+    otp_type = Column(String, nullable = False)
+    is_used = Column(Boolean, nullable = False, server_default = text("False"))

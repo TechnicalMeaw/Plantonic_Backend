@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from . import models
 import re
 import time as T
+from random import randint
 # import indiapins
 
 
@@ -86,4 +87,16 @@ def get_location_details(pincode: str):
             result.append(temp)
     return result
 
-    
+
+def is_email(email):
+    pattern = r'^\S+@\S+\.\S+$'
+    return re.match(pattern, email) is not None
+
+def is_phone_number(phone_number):
+    pattern = r'^\+?[0-9]+(?:\s*-?\s*[0-9]+)*$'
+    return re.match(pattern, phone_number) is not None
+
+def generate_new_otp():
+    range_start = 10**5
+    range_end = (10**6)-1
+    return randint(range_start, range_end)
