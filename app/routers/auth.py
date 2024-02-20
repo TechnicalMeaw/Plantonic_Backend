@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import status, HTTPException, Depends, APIRouter, Response
+from fastapi import status, HTTPException, Depends, APIRouter
 from datetime import datetime, timedelta
 from .. import easyAes, models, schemas, utils, oauth2
 from ..database import get_db
@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from ..firebase import firebase_auth
 from ..otp import otp_utils
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
 
 router = APIRouter(prefix= "/auth",
@@ -75,7 +77,7 @@ async def send_otp_to_existing_user(username: str, otp_type: Optional[str] = 'sm
         new_otp = models.OTP(otp=str(otp_generated), username=username, customer_id=local_user.id, firebase_uid=local_user.firebase_uid, otp_type=otp_type)
         db.add(new_otp)
         db.commit()
-        return Response(content={"status": True, "detail": "OTP has been sent successfully"}, status_code=status.HTTP_200_OK)
+        return JSONResponse(content=jsonable_encoder({"status": True, "detail": "OTP has been sent successfully"}), status_code=status.HTTP_200_OK)
 
     elif utils.is_email(username):
         user = firebase_auth.get_firebase_user_from_email(username)
@@ -92,7 +94,7 @@ async def send_otp_to_existing_user(username: str, otp_type: Optional[str] = 'sm
         new_otp = models.OTP(otp=str(otp_generated), username=username, customer_id=local_user.id, firebase_uid=local_user.firebase_uid, otp_type='email')
         db.add(new_otp)
         db.commit()
-        return Response(content={"status": True, "detail": "OTP has been sent successfully"}, status_code=status.HTTP_200_OK)
+        return JSONResponse(content=jsonable_encoder({"status": True, "detail": "OTP has been sent successfully"}), status_code=status.HTTP_200_OK)
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You've entered an invalid username.")
 
@@ -111,4 +113,4 @@ def verify_and_delete_user(verify_request: schemas.VerifyOTPRequestModel, db: Se
     # delete_account() 
     existing_otp.is_used = True
     db.commit()
-    return {"status": True, "detail": "Your account and all related data has been deleted successfully"}
+    return JSONResponse(content=jsonable_encoder({"status": True, "detail": "Your account and all related data has been deleted successfully"}))
