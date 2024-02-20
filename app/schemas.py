@@ -125,3 +125,8 @@ class TrackOrderResponseModel(BaseModel):
 class FeedBackRequestModel(BaseModel):
     feedBack : str
     rating: Optional[str] = None
+
+
+class OTPResponseModel(BaseModel):
+    status: bool
+    detail: str

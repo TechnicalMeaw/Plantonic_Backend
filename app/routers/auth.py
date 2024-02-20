@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import status, HTTPException, Depends, APIRouter
+from fastapi import status, HTTPException, Depends, APIRouter, Response
 from datetime import datetime, timedelta
 from .. import easyAes, models, schemas, utils, oauth2
 from ..database import get_db
@@ -50,7 +50,7 @@ def get_user_token(user : schemas.GetAuthToken, db: Session = Depends(get_db)):
         return {"access_token": access_token, "token_type": "bearer", "role": aes.encrypt(str(local_user.role))}
 
 
-@router.get("/send_otp_to_existing_user")
+@router.get("/send_otp_to_existing_user", response_model=schemas.OTPResponseModel)
 async def send_otp_to_existing_user(username: str, otp_type: Optional[str] = 'sms', db: Session = Depends(get_db)):
     if utils.is_phone_number(username):
         user = firebase_auth.get_firebase_user_from_phone(username)
@@ -75,7 +75,7 @@ async def send_otp_to_existing_user(username: str, otp_type: Optional[str] = 'sm
         new_otp = models.OTP(otp=str(otp_generated), username=username, customer_id=local_user.id, firebase_uid=local_user.firebase_uid, otp_type=otp_type)
         db.add(new_otp)
         db.commit()
-        return {"status": True, "detail": "OTP has been sent successfully"}
+        return Response(content={"status": True, "detail": "OTP has been sent successfully"}, status_code=status.HTTP_200_OK)
 
     elif utils.is_email(username):
         user = firebase_auth.get_firebase_user_from_email(username)
@@ -92,7 +92,7 @@ async def send_otp_to_existing_user(username: str, otp_type: Optional[str] = 'sm
         new_otp = models.OTP(otp=str(otp_generated), username=username, customer_id=local_user.id, firebase_uid=local_user.firebase_uid, otp_type='email')
         db.add(new_otp)
         db.commit()
-        return {"status": True, "detail": "OTP has been sent successfully"}
+        return Response(content={"status": True, "detail": "OTP has been sent successfully"}, status_code=status.HTTP_200_OK)
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You've entered an invalid username.")
 
