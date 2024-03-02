@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/x-icon" href="../static/site-logo.png">
+
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <title>Plantonic | Delete Account</title>
+    <style>
+        body {
+            background: #f7f7f7;
+            overflow: hidden;
+
+        }
+
+        .form-box {
+            max-width: 500px;
+            margin: 12rem auto;
+            padding: 50px;
+            background: #ffffff;
+            border: 10px solid #f2f2f2;
+        }
+
+        h1,
+        p {
+            text-align: center;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+        }
+
+        .download-btn {
+            background-color: #589a73;
+            color: #ffffff;
+            font-size: 18px;
+            border-radius: 21px;
+        }
+
+        .download-btn-outline {
+            background-color: #ffffff;
+            color: #589a73;
+            border: 2px solid #589a73;
+            font-size: 18px;
+            border-radius: 21px;
+        }
+
+        .navbar-brand {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+        }
+
+        .get-app-btn {
+            padding: 10px 12px;
+            border-radius: 30px;
+            font-weight: bold;
+            background: #ffd642;
+            color: #222222;
+            font-size: 14px;
+            font-family: sans-serif;
+            box-shadow: 2px 2px 10px #00000020;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Hello User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-left" style="font-size:18px">Are you sure, you want to delete your account</div>
+                <div class="modal-footer">
+                    <button onclick="gotosite()" type="button" class="btn btn-secondary w-100">No</button>
+                    <button type="button" class="btn download-btn w-100" style="border-radius:5px" data-dismiss="modal">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-transparent bg-transparent container-cs justify-content-between">
+        <a class="navbar-brand" href="/">
+            <img src="../static/site-logo.png" alt="" srcset="" width="40">
+        </a>
+        <button class="btn btn-outline-warning get-app-btn">Download App</button>
+    </nav>
+
+    <div class="form-box">
+        <h4>Delete your account</h4>
+        <div class="form-group">
+            <label for="username">Email/Mobile</label>
+            <input class="form-control" id="username" type="text" name="username"
+                placeholder="Enter your email or mobile number">
+            <input class="form-control d-none mt-3" id="otp" type="num" name="otp" placeholder="Enter your OTP">
+            <input class="form-control d-none mt-3" id="type" type="hidden" name="type" value="sms">
+            <button type="button" class="download-btn btn w-100 mt-3" id="getOtp" onclick="getOtp('sms')">Get
+                OTP</button>
+            <button type="button" class="download-btn-outline btn w-100 mt-3 d-none" id="getOtpByCall"
+                onclick="getOtp('voice')">Get
+                OTP on Call</button>
+            <button type="button" class="download-btn btn w-100 mt-3 d-none" id="submitOtp">Submit OTP</button>
+            <div class="mt-3 text-secondary" id="result"></div>
+            <div class="d-flex">
+                <span class="mt-3 text-success d-none" id="timeout">
+                    Try after&nbsp;<span id="counter"></span>&nbsp;sec.
+                </span>
+                <a class="mt-3 text-success d-none" id="resend" onclick="getOtp($('#type').val())">Resend OTP</a>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        $('.navbar-toggler-icon').html('<i class="fa-solid brand-color fa-bars"></i>');
+    </script>
+</body>
+
+</html>
+
+<script>
+    function gotosite() {
+        window.location.href = "/"
+    }
+    $('.modal').modal('show');
+    $('#username').keyup((e) => {
+        var val = e.target.value;
+        if (val.length <= 13) {
+            arr = val.split('');
+            let count = 0;
+            arr.forEach((element, i) => {
+                if (is_numeric(element) == true) {
+                    count++;
+                }
+            });
+            if (arr[0] == '+') {
+                count++;
+            }
+            if (count == val.length) {
+                $('#getOtpByCall').removeClass('d-none');
+            } else {
+                $('#getOtpByCall').addClass('d-none');
+            }
+        } else {
+            $('#getOtpByCall').addClass('d-none');
+        }
+    });
+
+    function is_numeric(str) {
+        return /^\d+$/.test(str);
+    }
+
+
+    const getOtp = (type) => {
+        $('body').css('opacity', '0.5');
+        var otpType = $('#type').val(type);
+        let username = document.getElementById("username").value;
+
+        var val = $('#username').val();
+        if (val.length <= 13) {
+            arr = val.split('');
+            let count = 0;
+            arr.forEach((element, i) => {
+                if (is_numeric(element) == true) {
+                    count++;
+                }
+            });
+            if (arr[0] == '+') {
+                count++;
+            }
+            if (count == val.length) {
+                $('#getOtpByCall').removeClass('d-none');
+                // reqData.num = 1;
+                if (val.length < 10) {
+                    $('body').css('opacity', '1');
+                    Toastify({
+                        text: "Mobile number must have 10 digits",
+                        duration: 3000,
+                        destination: "/",
+                        newWindow: true,
+                        close: true,
+                        gravity: "top", // top or bottom
+                        position: "right", // left, center or right
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, rgb(176 0 0), rgb(255 118 118))",
+                        },
+                        onClick: function () {} // Callback after click
+                    }).showToast();
+                    return;
+                } else if (val.length < 13) {
+                    $('body').css('opacity', '1');
+                    Toastify({
+                        text: "Mobile number must have 10 digits and Country code is mandatory",
+                        duration: 3000,
+                        destination: "https://github.com/apvarun/toastify-js",
+                        newWindow: true,
+                        close: true,
+                        gravity: "top", // top or bottom
+                        position: "right", // left, center or right
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, rgb(176 0 0), rgb(255 118 118))",
+                        },
+                        onClick: function () {} // Callback after click
+                    }).showToast();
+                    // $('#result').html('<span class="text-danger">Country code and 10 digits is mandatory</span>');
+                    return;
+                } else {
+                    $('#result').text('');
+                    $('getOtpByCall').removeClass('d-none');
+                    username = username.replace("+", "%2B");
+                }
+            } else {
+                $('#getOtpByCall').addClass('d-none');
+            }
+        } else {
+            $('#getOtpByCall').addClass('d-none');
+        }
+
+        fetch("https://plantonic.co.in/auth/send_otp_to_existing_user?username=" + username + "&otp_type=" + type)
+            .then(response => response.json())
+            .then(result => {
+                $('body').css('opacity', '1');
+                if (result.status) {
+                    var count = 60;
+                    var timer = setInterval(function () {
+                        $("#counter").html(count--);
+                        if (count == 0) {
+                            $('#timeout').addClass('d-none');
+                            $('#resend').addClass('d-none');
+                            clearInterval(timer);
+                        }
+                    }, 1000);
+                    $('#getOtpByCall').addClass('d-none');
+                    $('#timeout').removeClass('d-none');
+                    $('#otp').removeClass('d-none');
+                    $('#getOtp').addClass('d-none');
+                    $('#submitOtp').removeClass('d-none');
+
+                    Toastify({
+                        text: result.detail,
+                        duration: 3000,
+                        destination: "https://github.com/apvarun/toastify-js",
+                        newWindow: true,
+                        close: true,
+                        gravity: "top", // top or bottom
+                        position: "right", // left, center or right
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, #00b09b, #96c93d)",
+                        },
+                        onClick: function () {} // Callback after click
+                    }).showToast();
+                } else {
+                    Toastify({
+                        text: result.detail,
+                        duration: 3000,
+                        destination: "https://github.com/apvarun/toastify-js",
+                        newWindow: true,
+                        close: true,
+                        gravity: "top", // top or bottom
+                        position: "right", // left, center or right
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, rgb(176 0 0), rgb(255 118 118))",
+                        },
+                        onClick: function () {} // Callback after click
+                    }).showToast();
+                }
+            })
+            .catch(error => {
+                console.log('error', error);
+                $('body').css('opacity', '1');
+            });
+    };
+
+    $('#submitOtp').click(() => {
+        $('body').css('opacity', '0.5');
+        let otp = $('#otp').val();
+        let username = document.getElementById("username").value;
+        let otpType = $('#type').val();
+
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+
+        const raw = JSON.stringify({
+            "otp": otp,
+            "username": username,
+            "otp_type": otpType
+        });
+
+        const requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+        };
+
+        fetch("https://plantonic.co.in/auth/verify_and_delete_user", requestOptions)
+            .then((response) => response.json())
+            .then((result) => {
+                $('body').css('opacity', '1');
+                if (result.status) {
+                    Toastify({
+                        text: result.detail,
+                        duration: 3000,
+                        destination: "https://github.com/apvarun/toastify-js",
+                        newWindow: true,
+                        close: true,
+                        gravity: "top", // top or bottom
+                        position: "right", // left, center or right
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background: "linear-gradient(to right, #00b09b, #96c93d)",
+                        },
+                        onClick: function () {} // Callback after click
+                    }).showToast();
+                
+                    // setTimeout(() => {
+                    //     location.reload();
+                    // }, 5000);
+                    $('#otp').val('');
+                    $('#username').val('');
+                    $('#otp').addClass('d-none');
+                    $('#getOtp').removeClass('d-none');
+                    $('#submitOtp').addClass('d-none');
+                    $('#timeout').addClass('d-none');
+                } else {
+                    $('#result').text(result.detail);
+                }
+                setTimeout(() => {
+                    $('#result').hide();
+                }, 8000);
+            })
+            .catch((error) => {
+                $('#result').text(result.detail);
+            });
+
+
+        // let reqData = {};
+        // reqData.otp = $('#otp').val();
+        // reqData.username = document.getElementById("username").value;
+        // reqData.type = "email"
+
+        // $.ajax({
+        //     type: "POST",
+        //     url: "functions.php",
+        //     data: reqData,
+        //     dataType: "html",
+        //     beforeSend: function () {
+        //         $('body').css('opacity', '0.5');
+        //     },
+        //     success: function (data) {
+        //         $('body').css('opacity', '1');
+        //         let res = JSON.parse(data);
+        //         if (res.status == true) {
+        //             $('.modal-body').html('');
+        //             $('.modal-body').html(<p>Your account has been deleted successfully</p>);
+        //             $('.modal-footer').hide();
+        //             $('.modal').modal('show');
+        //             $('#otp').val('');
+        //             $('#username').val('');
+        //             $('#otp').addClass('d-none');
+        //             $('#getOtp').removeClass('d-none');
+        //             $('#submitOtp').addClass('d-none');
+        //             $('#timeout').addClass('d-none');
+        //         } else {
+        //             $('#result').text(res.detail);
+        //         }
+        //         setTimeout(() => {
+        //             $('#result').hide();
+        //         }, 8000);
+        //     },
+        //     error: function () {
+        //         alert("Error posting feed.");
+        //     }
+        // });
+    });
+</script>
+</body>
+
+</html>

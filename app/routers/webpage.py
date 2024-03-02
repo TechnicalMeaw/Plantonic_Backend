@@ -19,3 +19,7 @@ async def intro(request: Request):
 @router.get("/terms-and-condition", response_class=HTMLResponse)
 async def intro(request: Request):
     return templates.TemplateResponse("termcondition.html", {"request": request})
+
+@router.get("/delete-account", response_class=HTMLResponse)
+async def intro(request: Request):
+    return templates.TemplateResponse("deleteAccount.php", {"request": request})
