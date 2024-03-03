@@ -22,4 +22,4 @@ async def intro(request: Request):
 
 @router.get("/delete-account", response_class=HTMLResponse)
 async def intro(request: Request):
-    return templates.TemplateResponse("deleteAccount.php", {"request": request})
+    return templates.TemplateResponse("deleteAccount.html", {"request": request})
