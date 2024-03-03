@@ -121,8 +121,8 @@
                 <span class="text-success d-none" id="timeout">
                     Resend after&nbsp;<span id="counter"></span>&nbsp;sec.
                 </span>
-                <button class="btn mr-3 download-btn d-none" id="resend" onclick="getOtp($('#type').val())" style="font-size: 14px;color: #fff;padding: 3px 12px; font-weight: 600;">Resend OTP</button>
-                <button class="btn download-btn d-none d-none-c" id="callme" onclick="getOtp($('#type').val())" style="font-size: 14px;color: #589a73;padding: 3px 12px; border: 2px solid #589a73;background: transparent;font-weight: 600;"><i class="fa-solid fa-phone"></i>&nbsp;&nbsp;Call me</button>
+                <button class="btn mr-3 download-btn d-none" id="resend" onclick="getOtp('sms')" style="font-size: 14px;color: #fff;padding: 3px 12px; font-weight: 600;">Resend OTP</button>
+                <button class="btn download-btn d-none d-none-c" id="callme" onclick="getOtp('voice')" style="font-size: 14px;color: #589a73;padding: 3px 12px; border: 2px solid #589a73;background: transparent;font-weight: 600;"><i class="fa-solid fa-phone"></i>&nbsp;&nbsp;Call me</button>
             </div>
         </div>
     </div>
@@ -240,7 +240,9 @@
         fetch("https://plantonic.co.in/auth/send_otp_to_existing_user?username=" + username + "&otp_type=" + type)
             .then(response => response.json())
             .then(result => {
-                $('body').css('opacity', '1');
+                setTimeout(() => {
+                    $('body').css('opacity', '1');
+                }, 1000);
                 if (result.status) {
                     var count = 60;
                     var timer = setInterval(function () {
@@ -293,7 +295,9 @@
             })
             .catch(error => {
                 console.log('error', error);
-                $('body').css('opacity', '1');
+                setTimeout(() => {
+                    $('body').css('opacity', '1');
+                }, 1000);
             });
     };
 
@@ -348,6 +352,7 @@
                     $('#getOtp').removeClass('d-none');
                     $('#submitOtp').addClass('d-none');
                     $('#timeout').addClass('d-none');
+                    window.location.href = "/";
                 } else {
                     Toastify({
                         text: result.detail,

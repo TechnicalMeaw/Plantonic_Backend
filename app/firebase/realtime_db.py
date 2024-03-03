@@ -33,8 +33,25 @@ def update_product_quantity(product_id: str, quantity: int):
     to_be_quantity = int(current_quantity.json()) - quantity
     if to_be_quantity < 0:
         to_be_quantity = 0
-        # return int(0 - to_be_quantity)                                  
-    res = authed_session.patch(f"{settings.firebase_realtime_db_url}/products/{product_id}.json", json={"currentStock": to_be_quantity})
-    print(res.json())
+        # return int(0 - to_be_quantity)
+    authed_session.patch(f"{settings.firebase_realtime_db_url}/products/{product_id}.json", json={"currentStock": to_be_quantity})
 
-# update_product_quantity('1a918ecc-8919-4a62-afd1-46798e0cfeca', 4)
+
+def delete_user_details(user_id: str):
+    # Delete all cart items
+    try:
+        authed_session.delete(f"{settings.firebase_realtime_db_url}/cart/{user_id}.json")
+    except Exception:
+        pass
+
+    # Delete all favourite items
+    try:
+        authed_session.delete(f"{settings.firebase_realtime_db_url}/fav/{user_id}.json")
+    except Exception:
+        pass
+
+    # Delete all address items
+    try:
+        authed_session.delete(f"{settings.firebase_realtime_db_url}/address/{user_id}.json")
+    except Exception:
+        pass

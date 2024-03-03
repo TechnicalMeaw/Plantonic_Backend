@@ -13,6 +13,18 @@ class User(Base):
     is_verified = Column(Boolean, nullable = False, server_default = text("True"))
     role = Column(Integer, server_default = text("1"))
     last_login = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
+    is_deleted = Column(Boolean, nullable = False, server_default = text("False"))
+
+class DeletedUsers(Base):
+    __tablename__ = "deleted_users"
+
+    firebase_uid = Column(String, primary_key=True, nullable = False, unique = True)
+    auth_type = Column(String, nullable = False)
+    first_name = Column(String, nullable = False)
+    last_name = Column(String, nullable = False)
+    email= Column(String, nullable = True)
+    phone= Column(String, nullable = True)
+    deleted_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("Now()"))
 
 class HomePageBanners(Base):
     __tablename__ = "home_page_banners"

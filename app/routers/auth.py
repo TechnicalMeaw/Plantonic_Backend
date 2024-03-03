@@ -5,7 +5,7 @@ from .. import easyAes, models, schemas, utils, oauth2
 from ..database import get_db
 from sqlalchemy.orm import Session
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from ..firebase import firebase_auth
+from ..firebase import firebase_auth, firestore_db, realtime_db
 from ..otp import otp_utils
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -22,7 +22,7 @@ def get_user_token(user : schemas.GetAuthToken, db: Session = Depends(get_db)):
     user.uid = aes.decrypt(user.uid)
 
     print(user.uid)
-    local_user = db.query(models.User).filter(models.User.firebase_uid == user.uid).first()
+    local_user = db.query(models.User).filter(models.User.firebase_uid == user.uid, models.User.is_deleted==False).first()
 
     # IF user doesn't exists locally
     if not local_user:
@@ -59,7 +59,7 @@ async def send_otp_to_existing_user(username: str, otp_type: Optional[str] = 'sm
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="It seems like you don't have an account with this phone number.")
 
-        local_user = db.query(models.User).filter(models.User.firebase_uid == user['_data']['localId']).first()
+        local_user = db.query(models.User).filter(models.User.firebase_uid == user['_data']['localId'], models.User.is_deleted==False).first()
         if not local_user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="It seems like you've never explored the plantonic application before with this phone number.")
 
@@ -84,7 +84,7 @@ async def send_otp_to_existing_user(username: str, otp_type: Optional[str] = 'sm
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="It seems like you don't have an account with this email.")
 
-        local_user = db.query(models.User).filter(models.User.firebase_uid == user['_data']['localId']).first()
+        local_user = db.query(models.User).filter(models.User.firebase_uid == user['_data']['localId'], models.User.is_deleted==False).first()
         if not local_user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="It seems like you've never explored the plantonic application before with this phone number.")
 
@@ -98,6 +98,30 @@ async def send_otp_to_existing_user(username: str, otp_type: Optional[str] = 'sm
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You've entered an invalid username.")
 
+def delete_account(username: str, db: Session):
+    user = None
+    if utils.is_phone_number(username):
+        user = firebase_auth.get_firebase_user_from_phone(username)
+    elif utils.is_email(username):
+        user = firebase_auth.get_firebase_user_from_email(username)
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You've entered an invalid username.")
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="It seems like you don't have an account with this email.")
+    # Delete account from firebase
+    firestore_db.delete_user_info(user['_data']['localId'], db)
+
+    realtime_db.delete_user_details(user['_data']['localId'])
+
+    firebase_auth.delete_account(user['_data']['localId'])
+
+    local_user = db.query(models.User).filter(models.User.firebase_uid == user['_data']['localId'], models.User.is_deleted==False).first()
+    if not local_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="It seems like you've never explored the plantonic application before with this phone number.")
+
+    local_user.is_deleted = True
+    db.commit()
 
 
 @router.post("/verify_and_delete_user")
@@ -109,8 +133,8 @@ def verify_and_delete_user(verify_request: schemas.VerifyOTPRequestModel, db: Se
 
     if existing_otp.otp != str(verify_request.otp):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You've entered a wrong OTP.")
-    # TODO
-    # delete_account() 
+    # Delete account
+    delete_account(verify_request.username, db) 
     existing_otp.is_used = True
     db.commit()
     return JSONResponse(content=jsonable_encoder({"status": True, "detail": "Your account and all related data has been deleted successfully"}))

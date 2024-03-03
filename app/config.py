@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     sms_otp_auth_key: str
     sms_otp_base_url: str
     voice_otp_base_url: str
+    firebase_project_id: str
     is_live: bool
     
 
