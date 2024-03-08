@@ -10,7 +10,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/", response_class=HTMLResponse)
 async def intro(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+    return templates.TemplateResponse("homepage.html", {"request": request})
 
 @router.get("/privacy-policy", response_class=HTMLResponse)
 async def intro(request: Request):
