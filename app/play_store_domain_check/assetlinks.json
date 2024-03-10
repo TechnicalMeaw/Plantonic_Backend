@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "co.in.plantonic",
+      "sha256_cert_fingerprints": [
+        "C6:03:C7:9F:60:C0:24:88:EC:BB:68:E9:06:C8:0C:F1:32:3F:1F:B0:58:1E:50:49:7D:A8:45:94:54:FF:E8:78"
+      ]
+    }
+  }
+]

@@ -17,6 +17,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Google play domain verification
+app.mount("/.well-known", StaticFiles(directory="app/play_store_domain_check"), name=".well-known")
+
 # Static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
