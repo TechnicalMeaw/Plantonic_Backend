@@ -39,6 +39,9 @@ def check_pin_code(pincode: str, current_user : models.User = Depends(oauth2.get
 
 @router.post("/place_order", response_model=schemas.PaceOrderResponseModel)
 def place_order(all_orders: schemas.PlaceOrderRequestModel, db: Session = Depends(get_db), current_user : models.User = Depends(oauth2.get_current_user)):
+    
+    raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail="Currently we're not available at your area")
+    
     try:
         for order in all_orders.all_orders:
             # product info
