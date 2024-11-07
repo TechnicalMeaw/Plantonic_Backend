@@ -436,3 +436,29 @@ h1.hero-title {
     font-family: sans-serif;
     margin: 0;
 }
+
+
+@media only screen and (max-width: 989px) {
+    .btn-holder a {
+        display: block;
+    }
+    
+    .btn-holder img {
+        display: block;
+    }
+}
+
+
+.fade-image {
+    opacity: 0.7; /* Start fully visible */
+    transition: opacity 0.5s ease; /* Duration of the fade effect */
+  }
+  
+  .fade-image:hover {
+    opacity: 0.4; /* Fade to 50% opacity on hover */
+    cursor: pointer;
+  }
+
+/* .play-store-download {
+    cursor: pointer;
+} */
